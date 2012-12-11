@@ -44,13 +44,8 @@ catch
 endtry
 
 " ensure g:multicursor_debug exists
-if ! exists("g:multicursor_debug")
+if !exists("g:multicursor_debug")
 	let g:multicursor_debug = 0
-endif
-
-" ensure g:multicursor_quit exists
-if ! exists("g:multicursor_quit")
-	let g:multicursor_quit = 0
 endif
 
 " initialize variables
@@ -105,6 +100,11 @@ endfunction
 
 " begin using multicursor, utilizing manually placed cursors
 function! MultiCursorManual()
+	" ensure quit mapping has been set
+	if !s:EnsureCanQuit()
+		return -1
+	endif
+
 	" ensure at least one cursor has been placed
 	if !exists("s:cursor_syntaxes") || len(s:cursor_syntaxes) == 0
 		redraw
@@ -120,6 +120,11 @@ endfunction
 
 " begin using multicursor, utilizing cursors from visual mode range
 function! MultiCursorVisual()
+	" ensure quit mapping has been set
+	if !s:EnsureCanQuit()
+		return -1
+	endif
+
 	" clear any existing cursors
 	call MultiCursorRemoveCursors()
 
@@ -137,6 +142,11 @@ endfunction
 
 " begin using multicursor, utilizing cursors from search results
 function! MultiCursorSearch(search_pattern)
+	" ensure quit mapping has been set
+	if !s:EnsureCanQuit()
+		return -1
+	endif
+
 	" clear any existing cursors
 	call MultiCursorRemoveCursors()
 
@@ -232,6 +242,24 @@ function! s:InitLoop()
 	" everything is ready for the main loop.
 	" begin taking input from the user and applying it to all of the cursors
 	call s:MainLoop()
+endfunction
+
+" ensure user set g:multicursor_quit - don't run if the user can't cleanly
+" exit.
+function! s:EnsureCanQuit()
+	" ensure g:multicursor_quit exists
+	if  !exists("g:multicursor_quit") || g:multicursor_quit == ""
+		" clear any existing cursors - don't want to leave a mess
+		call MultiCursorRemoveCursors()
+		redraw
+		" notify user that quitting key needs to be set up
+
+		echohl ErrorMsg
+		echo "MultiCursor: No mapping set to quit; refusing to run.  See ':help g:multicursor_quit'"
+		echohl Normal
+		return 0
+	endif
+	return 1
 endfunction
 
 " move the syntax highlighting for a cursor to match the real cursor's
@@ -465,7 +493,7 @@ function! s:MainLoop()
 		if g:multicursor_quit ==# s:input
 			call MultiCursorRemoveCursors()
 			redraw
-			echo "MultiCursor has stopped."
+			echo "MultiCursor: g:multicursor_quit was called, quitting"
 			return 0
 		endif
 
@@ -503,6 +531,6 @@ function! s:MainLoop()
 	endtry
 	call MultiCursorRemoveCursors()
 	redraw
-	echo "MultiCursor has stopped."
+	echo "MultiCursor: either user hit ctrl-c or error occured.  See ':help multicursor-debug'"
 	return 0
 endfunction

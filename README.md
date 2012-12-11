@@ -87,12 +87,15 @@ Or every group of characters like those visually selected:
 Some of the above magic was borrowed from the [SearchParty
 plugin](https://github.com/dahu/SearchParty).
 
-Finally, you can set a keybinding to stop using multiple cursors (and fall back
-to the normal single cursor) like so:
+Finally, you should set a keybinding to stop using multiple cursors (and fall
+back to the normal single cursor) like so:
 
     let g:multicursor_quit = "{keys}"
 
-Note that |ctrl-c| will also stop MultiCursor.
+This functions somewhat like |mapleader|, except that it is limited to what can
+be provided by a single |getchar()| (after it has been run through
+|nr2char()|).  If |g:multicursor_quit| does not seem to work, you can fall back
+to |ctrl-c|.
 
 In addition to creating mappings, you can override the color scheme used by
 MultiCursor for the cursors by setting the "MultiCursor" highlight group.  See

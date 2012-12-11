@@ -1,13 +1,16 @@
-# MultiCursor
+MultiCursor
+===========
 
 MultiCursor USER MANUAL - by Daniel Thau
 
-## Description
+Description
+-----------
 
 This plugin will allow Vim to utilize multiple cursors simultaneously.  This
 can be used to do things such as refactor many lines at the same time.
 
-## Setup
+Setup
+-----
 
 MultiCursor currently requires Vim 7.3 for undotree().
 
@@ -37,21 +40,25 @@ into the relevant directory described above, replacing "plugin" with "doc".
 There are a few ways to access MultiCursor's functionality, none of which have
 mappings out of the box; you will have to create your own mappings.
 
+                                                      |MultiCursorPlaceCursor()|
 If you would like to manually place cursors by moving your cursor above each
 location and pressing a keybinding, set the keybinding like so, setting {keys}
 as desired:
 
     nnoremap {keys} :<c-u>call MultiCursorPlaceCursor()<cr>
 
+                                                           |MultiCursorManual()|
 To actually utilize these manually placed cursors you will need to call another
 mapping:
 
     nnoremap {keys} :<c-u>call MultiCursorManual()<cr>
 
+                                                    |MultiCursorRemoveCursors()|
 If you would like to cancel manually placed cursors without utilizing them:
 
     nnoremap {keys} :<c-u>call MultiCursorRemoveCursors()<cr>
 
+                                                           |MultiCursorVisual()|
 You can also create cursors from visual mode:
 
     xnoremap {keys} :<c-u>call MultiCursorVisual()<cr>
@@ -62,6 +69,7 @@ MultiCursor to only create one cursor per that many lines.  For example,
 running 2{keys} will create a cursor on every other line of the visually
 selected area.
 
+                                                           |MultiCursorSearch()|
 Finally, you can create cursors by searching the buffer via regular
 expressions.  To have MultiCursor prompt you for the search pattern:
 
@@ -77,8 +85,10 @@ Or every group of characters like those visually selected:
 
     xnoremap {keys} "*y<Esc>:call MultiCursorSearch('<c-r>=substitute(escape(@*, '\/.*$^~[]'), "\n", '\\n', "g")<cr>')<cr>
 
-Some of the above magic was borrowed from the [SearchParty plugin](https://github.com/dahu/SearchParty).
+Some of the above magic was borrowed from the [SearchParty
+plugin](https://github.com/dahu/SearchParty).
 
+                                                            |g:multicursor_quit|
 Finally, you can set a keybinding to stop using multiple cursors (and fall back
 to the normal single cursor) like so:
 
@@ -90,7 +100,8 @@ In addition to creating mappings, you can override the color scheme used by
 MultiCursor for the cursors by setting the "MultiCursor" highlight group.  See
 |:highlight|.
 
-## Usage
+Usage
+-----
 
 To utilize multiple cursors, you must first create the extra cursors.  There
 are several methods to do so.  The setup method for each is described above in
@@ -115,7 +126,8 @@ will be applied at each of the cursor positions.  For example, "diw" will
 delete the word under each of the cursors.  You can stop using multiple cursors
 by entering |ctrl-c| or some other keybinding as set in |g:multicursor_quit|.
 
-## Known Issues
+Known Issues
+------------
 
 - Insert mode works; however, the output is not updated in the buffer until it
   has been completed (ie, the mode as returned to normal mode.)  Do note that
@@ -130,8 +142,10 @@ by entering |ctrl-c| or some other keybinding as set in |g:multicursor_quit|.
 
 - The cmdline works, but like insert and visual mode it has limitations; you
   won't get to see things like the wildmenu.  Additionally, output from
-  commands such as |:ls| don't work.  Commands which do not generate output,
-  such as |:bn|, work fine.
+  commands such as |:ls| don't work.  Note that cmdline commands are run for
+  every cursor.  This is not necessarily an "issue", as it is useful if one
+  wants to run a :substitute at every cursor, but it is potentially confusing
+  at first.
 
 - Multi-key normal-mode maps do not work.  Insert-mode and visual-mode maps do
   work, although their end may not be recognized and they may not trigger
@@ -170,7 +184,8 @@ by entering |ctrl-c| or some other keybinding as set in |g:multicursor_quit|.
   |g:multicursor_quit| to "q" will also quite MultiCursor if it is in insert
   mode.
 
-## Debug
+Debug
+-----
 
 If you would like to hack at MultiCursor, the debug mode can be turned on by
 placing the following in your vimrc, or running it in the cmdline in a running
@@ -213,7 +228,8 @@ MultiCursor will still remove the cursors and exit cleanly.  The down side to
 this is that it makes debugging difficult, as errors are hidden.  Hence, with
 debugging on, the try/catch block is disabled.
 
-## Changelog
+Changelog
+---------
 
-0.1 (2012-12-10):
+0.1 (2012-12-11):
  - initial release

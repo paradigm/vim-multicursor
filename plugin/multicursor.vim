@@ -2,7 +2,7 @@
 " Maintainer: Daniel Thau (paradigm@bedrocklinux.org)
 " Version: 0.1
 " Description: Allows Vim to use multiple cursors simultaneously
-" Last Change: 2012-12-10
+" Last Change: 2012-12-11
 " Location: plugin/multicursor.vim
 " Website: https://github.com/paradigm/vim-multicursor
 "
@@ -477,8 +477,6 @@ function! s:MultiCursorMainLoop()
 						\|| s:total_input ==# "\<c-r>"
 						\|| s:total_input ==# "g-"
 						\|| s:total_input ==# "g+"
-						\|| s:total_input[0]==":"
-						\|| s:total_input=="@:"
 						\)
 				" some commands should only be run once total; handle these
 				" specially

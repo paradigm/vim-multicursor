@@ -150,8 +150,10 @@ by entering |ctrl-c| or some other keybinding as set in |g:multicursor_quit|.
 
 - The cmdline works, but like insert and visual mode it has limitations; you
   won't get to see things like the wildmenu.  Additionally, output from
-  commands such as |:ls| don't work.  Commands which do not generate output,
-  such as |:bn|, work fine.
+  commands such as |:ls| don't work.  Note that cmdline commands are run for
+  every cursor.  This is not necessarily an "issue", as it is useful if one
+  wants to run a :substitute at every cursor, but it is potentially confusing
+  at first.
 
 - Multi-key normal-mode maps do not work.  Insert-mode and visual-mode maps do
   work, although their end may not be recognized and they may not trigger
@@ -237,7 +239,7 @@ debugging on, the try/catch block is disabled.
 ==============================================================================
 6. Changelog                                           *multicursor-changelog*
 
-0.1 (2012-12-10):
+0.1 (2012-12-11):
  - initial release
 
 ==============================================================================

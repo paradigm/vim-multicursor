@@ -48,25 +48,25 @@ into the relevant directory described above, replacing "plugin" with "doc".
 There are a few ways to access MultiCursor's functionality, none of which have
 mappings out of the box; you will have to create your own mappings.
 
-                                                      |MultiCursorPlaceCursor()|
+                                                      *MultiCursorPlaceCursor()*
 If you would like to manually place cursors by moving your cursor above each
 location and pressing a keybinding, set the keybinding like so, setting {keys}
 as desired:
 
     nnoremap {keys} :<c-u>call MultiCursorPlaceCursor()<cr>
 
-                                                           |MultiCursorManual()|
+                                                           *MultiCursorManual()*
 To actually utilize these manually placed cursors you will need to call another
 mapping:
 
     nnoremap {keys} :<c-u>call MultiCursorManual()<cr>
 
-                                                    |MultiCursorRemoveCursors()|
+                                                    *MultiCursorRemoveCursors()*
 If you would like to cancel manually placed cursors without utilizing them:
 
     nnoremap {keys} :<c-u>call MultiCursorRemoveCursors()<cr>
 
-                                                           |MultiCursorVisual()|
+                                                           *MultiCursorVisual()*
 You can also create cursors from visual mode:
 
     xnoremap {keys} :<c-u>call MultiCursorVisual()<cr>
@@ -77,7 +77,7 @@ MultiCursor to only create one cursor per that many lines.  For example,
 running 2{keys} will create a cursor on every other line of the visually
 selected area.
 
-                                                           |MultiCursorSearch()|
+                                                           *MultiCursorSearch()*
 Finally, you can create cursors by searching the buffer via regular
 expressions.  To have MultiCursor prompt you for the search pattern:
 
@@ -96,7 +96,7 @@ Or every group of characters like those visually selected:
 Some of the above magic was borrowed from the SearchParty plugin:
 https://github.com/dahu/SearchParty
 
-                                                            |g:multicursor_quit|
+                                                            *g:multicursor_quit*
 Finally, you can set a keybinding to stop using multiple cursors (and fall back
 to the normal single cursor) like so:
 

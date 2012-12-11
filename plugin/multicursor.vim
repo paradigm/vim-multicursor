@@ -1,6 +1,6 @@
 " Vim plugin to add MultiCursor support
 " Maintainer: Daniel Thau (paradigm@bedrocklinux.org)
-" Version: 0.1
+" Version: 0.2
 " Description: Allows Vim to use multiple cursors simultaneously
 " Last Change: 2012-12-11
 " Location: plugin/multicursor.vim

@@ -48,6 +48,11 @@ if ! exists("g:multicursor_debug")
 	let g:multicursor_debug = 0
 endif
 
+" ensure g:multicursor_quit exists
+if ! exists("g:multicursor_quit")
+	let g:multicursor_quit = 0
+endif
+
 " initialize variables
 let s:cursor_columns   = []
 let s:cursor_lines     = []

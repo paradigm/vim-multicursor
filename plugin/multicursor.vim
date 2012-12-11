@@ -92,7 +92,7 @@ function! MultiCursorPlaceCursor()
 
 	" set new cursor's registers
 	let s:cursor_registers = add(s:cursor_registers,{})
-	call s:MultiCursorSetRegisters(len(s:cursor_registers)-1)
+	call s:SetRegisters(len(s:cursor_registers)-1)
 
 	redraw
 	echo "MultiCursor: Dropped cursor at (".line(".").",".col(".").")"
@@ -110,7 +110,7 @@ function! MultiCursorManual()
 	endif
 
 	" prepare for the main loop
-	return s:MultiCursorInitLoop()
+	return s:InitLoop()
 endfunction
 
 " begin using multicursor, utilizing cursors from visual mode range
@@ -127,7 +127,7 @@ function! MultiCursorVisual()
 	endfor
 
 	" prepare for the main loop
-	call s:MultiCursorInitLoop()
+	call s:InitLoop()
 endfunction
 
 " begin using multicursor, utilizing cursors from search results
@@ -179,7 +179,7 @@ function! MultiCursorSearch(search_pattern)
 	endif
 
 	" prepare for the main loop
-	call s:MultiCursorInitLoop()
+	call s:InitLoop()
 endfunction
 
 
@@ -192,7 +192,7 @@ endfunction
 " setup requirements for the main loop.
 " every method the user uses to start multicursor will pass through here on
 " the way to the main loop
-function! s:MultiCursorInitLoop()
+function! s:InitLoop()
 	" initialize variables
 
 	" will hold the mode
@@ -226,13 +226,13 @@ function! s:MultiCursorInitLoop()
 
 	" everything is ready for the main loop.
 	" begin taking input from the user and applying it to all of the cursors
-	call s:MultiCursorMainLoop()
+	call s:MainLoop()
 endfunction
 
 " move the syntax highlighting for a cursor to match the real cursor's
 " position.  this is used to move the visual representation of the cursors
 " around.
-function! s:MultiCursorMoveCursor(index)
+function! s:MoveCursor(index)
 	" remove old syntax highlight
 	call matchdelete(s:cursor_syntaxes[a:index])
 	" add new syntax highlight
@@ -241,7 +241,7 @@ endfunction
 
 " store "real" registers into a variable so we can pull them back up for a
 " given cursor
-function! s:MultiCursorSetRegisters(index)
+function! s:SetRegisters(index)
 	for l:register in ['"', "0", "1", "2", "3", "4", "5", "6", "7", "8",
 				\ "9","-", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 				\ "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
@@ -251,7 +251,7 @@ endfunction
 
 " get the cursors stored in this cursor's register dictionary and change each
 " "real" register accordingly
-function! s:MultiCursorGetRegisters(index)
+function! s:GetRegisters(index)
 	for l:register in ['"', "0", "1", "2", "3", "4", "5", "6", "7", "8",
 				\ "9","-", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 				\ "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
@@ -262,7 +262,7 @@ endfunction
 " output the in-progress command for the user.  this helps significantly with
 " non-normal mode commands which are not updated in the buffer until
 " completed.  additionally, if debug is set, output debug info
-function! s:MultiCursorOutput()
+function! s:Output()
 	" move cursor to first cursor's position to move window to first cursor's
 	" position
 	call cursor(s:cursor_lines[0], s:cursor_columns[0])
@@ -276,7 +276,7 @@ function! s:MultiCursorOutput()
 endfunction
 
 " get s:input from user and append it to s:total_input
-function! s:MultiCursorInput()
+function! s:Input()
 	let s:input = getchar()
 	if type(s:input) == 0
 		let s:input = nr2char(s:input)
@@ -293,7 +293,7 @@ endfunction
 " returns false positives, such as when it can run just a prefix count or a
 " prefix register.  use l:run_command below to rule out such false positives
 " before we try to detect success from :normal
-function! s:MultiCursorCheckCommand()
+function! s:CheckCommand()
 	let l:run_command = 1
 
 	" don't try to run with just a prefix count
@@ -333,7 +333,7 @@ function! s:MultiCursorCheckCommand()
 	return l:run_command
 endfunction
 
-function! s:MultiCursorRunCommand()
+function! s:RunCommand()
 	" the command will be run with the first cursor - move the real cursor to
 	" the proper position
 	call cursor(s:cursor_lines[0], s:cursor_columns[0])
@@ -351,7 +351,7 @@ function! s:MultiCursorRunCommand()
 
 	" each cursor gets its own set of the registers.  pull up the real/first
 	" cursor's registers
-	call s:MultiCursorGetRegisters(0)
+	call s:GetRegisters(0)
 
 	" run the command.  explicitly set the register to be used to the unnamed
 	" register.  if the user input a register prefix, that will take
@@ -360,7 +360,7 @@ function! s:MultiCursorRunCommand()
 
 	" save this cursor's registers, which might have changed in the above
 	" command
-	call s:MultiCursorSetRegisters(0)
+	call s:SetRegisters(0)
 
 	" compare the pre_ variables to the current state
 	
@@ -379,11 +379,11 @@ endfunction
 " run once in total irrelevant of the number of cursors.  an obvious example
 " is undo.  for these commands, just reset the cursor positions and clean
 " input
-function! s:MultiCursorHandleUniqueCmds()
+function! s:HandleUniqueCmds()
 	" restore cursor positions in case undo moved stuff around
 	for l:index in range(0,len(s:cursor_syntaxes)-1)
 		call cursor(s:cursor_lines[l:index], s:cursor_columns[l:index])
-		call s:MultiCursorMoveCursor(l:index)
+		call s:MoveCursor(l:index)
 	endfor
 
 	" clean input
@@ -392,7 +392,7 @@ endfunction
 
 " a command was successfully run in one cursor and we're in normal mode
 " run the command with the rest of the cursors
-function! s:MultiCursorHandleNormalCmds()
+function! s:HandleNormalCmds()
 	" "real"/first cursor moved while executing commands.  Store that.
 	let s:cursor_lines[0] = line(".")
 	let s:cursor_columns[0] = col(".")
@@ -412,13 +412,13 @@ function! s:MultiCursorHandleNormalCmds()
 		" cursors.
 		if l:index != 0
 			" restore this cursor's register
-			call s:MultiCursorGetRegisters(l:index)
+			call s:GetRegisters(l:index)
 
 			" execute command for this cursor
 			execute "silent! normal ".'""'.s:total_input
 
 			" store new register
-			call s:MultiCursorSetRegisters(l:index)
+			call s:SetRegisters(l:index)
 		endif
 		
 		" store new location
@@ -426,7 +426,7 @@ function! s:MultiCursorHandleNormalCmds()
 		let s:cursor_columns[l:index] = col(".")
 
 		" move syntax highlighting
-		call s:MultiCursorMoveCursor(l:index)
+		call s:MoveCursor(l:index)
 	endfor
 
 	" clean input
@@ -438,7 +438,7 @@ endfunction
 " if so, run it
 " if not, clean up any mess the test might have made
 " repeat
-function! s:MultiCursorMainLoop()
+function! s:MainLoop()
 	" if debug is off, use try/catch to make sure we clean up on exit, in case
 	" user ctrl-c's or there is an error.  the conditional ternary operator is
 	" used instead of the more common :if because vim will get confused if it
@@ -448,10 +448,10 @@ function! s:MultiCursorMainLoop()
 	
 	while 1
 		" output situation to user
-		call s:MultiCursorOutput()
+		call s:Output()
 
 		" get input from user
-		call s:MultiCursorInput()
+		call s:Input()
 
 		" reset s:mode to blank
 		let s:mode = ""
@@ -467,9 +467,9 @@ function! s:MultiCursorMainLoop()
 		" check if we have a complete command to try to run. if we do, run the
 		" command and deal with output.  if not, loop back around for more
 		" input until we do.
-		if s:MultiCursorCheckCommand()
+		if s:CheckCommand()
 			" run command
-			call s:MultiCursorRunCommand()
+			call s:RunCommand()
 
 			" handle result
 			if s:mode == "n" && (
@@ -480,11 +480,11 @@ function! s:MultiCursorMainLoop()
 						\)
 				" some commands should only be run once total; handle these
 				" specially
-				call s:MultiCursorHandleUniqueCmds()
+				call s:HandleUniqueCmds()
 			elseif s:mode == "n"
 				" a command was successfully run in one cursor.  apply this
 				" command to the rest of the cursors
-				call s:MultiCursorHandleNormalCmds()
+				call s:HandleNormalCmds()
 			elseif s:undo
 				" if a command changed the buffer (as noted by a change in the
 				" undo tree) but did *not* register as a successfully

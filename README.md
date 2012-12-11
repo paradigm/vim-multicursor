@@ -1,4 +1,4 @@
-### MultiCursor
+# MultiCursor
 
 MultiCursor USER MANUAL - by Daniel Thau
 

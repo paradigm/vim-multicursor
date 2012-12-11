@@ -3,6 +3,10 @@ MultiCursor
 
 MultiCursor USER MANUAL - by Daniel Thau
 
+If you'd like to skip the whole "reading" nonsense and watch a nice, wholesome
+video which explains SkyBison instead, see
+[here](http://www.youtube.com/watch?v=Umb59mMvCxA).
+
 Description
 -----------
 

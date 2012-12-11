@@ -102,6 +102,8 @@ back to the normal single cursor) like so:
 
     let g:multicursor_quit = "{keys}"
 
+This will quit multicursor from normal mode (ie, if pressed in another mode
+such as insert or visual it will act as though there is no special mapping).
 This functions somewhat like |mapleader|, except that it is limited to what can
 be provided by a single |getchar()| (after it has been run through
 |nr2char()|).  If |g:multicursor_quit| does not seem to work, you can fall back
@@ -135,7 +137,8 @@ are several methods to do so.  The setup method for each is described above in
 Once the cursors are created and being used, most commands entered into Vim
 will be applied at each of the cursor positions.  For example, "diw" will
 delete the word under each of the cursors.  You can stop using multiple cursors
-by entering |ctrl-c| or some other keybinding as set in |g:multicursor_quit|.
+by typing |g:multicursor_quit| or, if that is not working, fall back to
+|ctrl-c|.
 
 ==============================================================================
 4. Known Issues                                           *multicursor-issues*
@@ -189,11 +192,6 @@ by entering |ctrl-c| or some other keybinding as set in |g:multicursor_quit|.
   entered.
 
 - Cursors on areas without characters (such as blank lines) aren't visible.
-
-- The keybinding to stop MultiCursor works in all modes.  One cannot, at the
-  moment, stop MultiCursor with "q" in only normal mode - setting
-  |g:multicursor_quit| to "q" will also quite MultiCursor if it is in insert
-  mode.
 
 ==============================================================================
 5. Debug                                                   *multicursor-debug*

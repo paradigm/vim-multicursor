@@ -486,16 +486,16 @@ function! s:MainLoop()
 		" get input from user
 		call s:Input()
 
-		" reset s:mode to blank
-		let s:mode = ""
-
 		" check if user requested to quit; if so, do so.
-		if g:multicursor_quit ==# s:input
+		if g:multicursor_quit ==# s:input && s:mode == "n"
 			call MultiCursorRemoveCursors()
 			redraw
 			echo "MultiCursor: g:multicursor_quit was called, quitting"
 			return 0
 		endif
+
+		" reset s:mode to blank
+		let s:mode = ""
 
 		" check if we have a complete command to try to run. if we do, run the
 		" command and deal with output.  if not, loop back around for more

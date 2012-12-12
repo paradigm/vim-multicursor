@@ -312,10 +312,22 @@ function! s:Output()
 	call cursor(s:cursor_lines[0], s:cursor_columns[0])
 	redraw
 	if s:multicursor_debug
+		" show debug output
 		echo 'I:"'.s:total_input.'" M:"'.s:mode.'" U:"'.s:undo.'v'.undotree()['seq_cur'].','.s:undo_triggered.'"'
 		let s:undo_triggered = 0
 	else
-		echo s:total_input
+		" show mode and partial command
+		if s:total_input == ""
+			echo "  MC (type a command)\r"
+		elseif s:mode == "i"
+			echo "  MC (partial insert) '".s:total_input."'\r"
+		elseif s:mode == "v"
+			echo "  MC (partial visual) '".s:total_input."'\r"
+		elseif s:mode == "o"
+			echo "  MC (partial opertr) '".s:total_input."'\r"
+		else
+			echo "  MC (partial normal) '".s:total_input.."'\r"
+		endif
 	endif
 endfunction
 

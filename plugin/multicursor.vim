@@ -28,21 +28,6 @@ endif
 " - initialize_vars                                                            -
 " ------------------------------------------------------------------------------
 
-" check if syntax highlighting exists.  if not, create.
-try
-	highlight MultiCursor
-catch
-	highlight MultiCursor guifg = bg
-	highlight MultiCursor guibg = fg
-	if &background == "light"
-		highlight MultiCursor ctermfg = 231
-		highlight MultiCursor ctermbg = 0
-	else
-		highlight MultiCursor ctermfg = 0
-		highlight MultiCursor ctermbg = 231
-	endif
-endtry
-
 " ensure g:multicursor_debug exists
 if !exists("g:multicursor_debug")
 	let g:multicursor_debug = 0
@@ -83,6 +68,9 @@ endfunction
 
 " manually place a cursor
 function! MultiCursorPlaceCursor()
+	" ensure the extra cursor syntax highlighting is enabled
+	call s:EnsureSyntaxHighlighting()
+
 	" set new cursor's position
 	let s:cursor_lines = add(s:cursor_lines,line("."))
 	let s:cursor_columns = add(s:cursor_columns,col("."))
@@ -95,7 +83,7 @@ function! MultiCursorPlaceCursor()
 	call s:SetRegisters(len(s:cursor_registers)-1)
 
 	redraw
-	echo "MultiCursor: Dropped cursor at (".line(".").",".col(".").")"
+	echo "MultiCursor: Placed cursor at (".line(".").",".col(".").")"
 endfunction
 
 " begin using multicursor, utilizing manually placed cursors
@@ -208,7 +196,8 @@ endfunction
 " every method the user uses to start multicursor will pass through here on
 " the way to the main loop
 function! s:InitLoop()
-	" initialize variables
+	" ensure the extra cursor syntax highlighting is enabled
+	call s:EnsureSyntaxHighlighting()
 
 	" will hold the mode
 	let s:mode = ""
@@ -260,6 +249,34 @@ function! s:EnsureCanQuit()
 		return 0
 	endif
 	return 1
+endfunction
+
+" if the MultiCursor syntax group either doesn't exist or is cleared, set it
+" to a sane default.
+function! s:EnsureSyntaxHighlighting()
+	let l:need_highlight = 0
+	if hlexists("MultiCursor")
+		let l:highlight_status = ""
+		redir => l:highlight_status
+			silent highlight MultiCursor
+		redir END
+		if split(l:highlight_status)[2] == "cleared"
+			let l:need_highlight = 1
+		endif
+	else
+		let l:need_highlight = 1
+	endif
+	if l:need_highlight
+		highlight MultiCursor guifg = bg
+		highlight MultiCursor guibg = fg
+		if &background == "light"
+			highlight MultiCursor ctermfg = 231
+			highlight MultiCursor ctermbg = 0
+		else
+			highlight MultiCursor ctermfg = 0
+			highlight MultiCursor ctermbg = 231
+		endif
+	endif
 endfunction
 
 " move the syntax highlighting for a cursor to match the real cursor's

@@ -23,15 +23,9 @@ if v:version < 703
 	finish
 endif
 
-
 " ------------------------------------------------------------------------------
 " - initialize_vars                                                            -
 " ------------------------------------------------------------------------------
-
-" ensure g:multicursor_debug exists
-if !exists("g:multicursor_debug")
-	let g:multicursor_debug = 0
-endif
 
 " initialize variables
 let s:cursor_columns   = []
@@ -317,7 +311,7 @@ function! s:Output()
 	" position
 	call cursor(s:cursor_lines[0], s:cursor_columns[0])
 	redraw
-	if g:multicursor_debug
+	if s:multicursor_debug
 		echo 'I:"'.s:total_input.'" M:"'.s:mode.'" U:"'.s:undo.'v'.undotree()['seq_cur'].','.s:undo_triggered.'"'
 		let s:undo_triggered = 0
 	else
@@ -489,12 +483,17 @@ endfunction
 " if not, clean up any mess the test might have made
 " repeat
 function! s:MainLoop()
+	if exists("g:multicursor_debug") && g:multicursor_debug
+		let s:multicursor_debug = 1
+	else
+		let s:multicursor_debug = 0
+	endif
 	" if debug is off, use try/catch to make sure we clean up on exit, in case
 	" user ctrl-c's or there is an error.  the conditional ternary operator is
 	" used instead of the more common :if because vim will get confused if it
 	" sees an :endif before an :if after a :try.  see ":help expr1" to learn
 	" more about this syntax.
-	execute g:multicursor_debug ? "" : "try"
+	execute s:multicursor_debug ? "" : "try"
 	
 	while 1
 		" output situation to user
